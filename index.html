@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=100vw, initial-scale=1.0">
     <link rel="stylesheet" href="./libs/css/bootstrap.min.css">
     <script src="./libs/js/bootstrap.bundle.min.js"></script>
-    <script src="./libs/d3.min.js"></script>
-    <script src="./libs/d3_topo.min.js"></script>
+    <script src="./libs/js/d3.min.js"></script>
+    <script src="./libs/js/d3_topo.min.js"></script>
 
     <style>
         path {
@@ -89,8 +89,7 @@
             // if topojson file is imported we need to 
             // convert topology data to geojson 
             const geojson = topojson.feature(topo_data, topo_data.objects.cb_2018_us_state_500k);
-            console.log(geojson)
-            console.log("mubi")
+            console.log(geojson);
 
             /*-------------------------------------------------------*/
             /*----------------------Projections----------------------*/

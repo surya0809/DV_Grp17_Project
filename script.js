@@ -6,20 +6,30 @@ const window_dims = {
     width: window.innerWidth,
     height: window.innerHeight
 };
-const margin = window_dims.width * .2
+const margin = window_dims.width * .2;
 
-const data = [];
+var data = [];
+
+/*-------------------------------------------------------*/
+/*----------------------Projections----------------------*/
+/*-------------------------------------------------------*/
+const projections = [
+    d3.geoAzimuthalEqualArea(), //Azimuthal projections project the sphere directly onto a plane.
+    d3.geoAlbersUsa(), // USA conic projection
+    d3.geoAlbers(), // equal-area conic projection
+    d3.geoMercator(), // cylindrical projection
+    d3.geoNaturalEarth1(), // pseudocylindrical projection designed by Tom Patterson
+    d3.geoEqualEarth(), // Equal Earth projection, by Bojan Šavrič et al., 2018.
+    d3.geoConicEqualArea(), //equal-area conic projection
+    d3.geoEquirectangular(), //Cylindrical Projections
+    d3.geoOrthographic()
+]
 
 let yearSlider = document.getElementById("yearRange");
 yearSlider.addEventListener('change', v => {
     // console.log(v.target.value);
     // open both files
-    Promise.all([
-        d3.json(states_topo),
-        d3.csv(elec_gen),
-        d3.csv(c02_emissions),
-        d3.csv(population)
-    ]).then((d) => main(d, v.target.value))
+    geoPlot(data, v.target.value);
 });
 /*-------------------------------------------------------*/
 /*-----------------parallel load data--------------------*/
@@ -37,6 +47,18 @@ const c02_emissions = "./data/CO2.csv"
 // xlsx with population from 2000 - 2018
 const population = "./data/pop_2010_2019.csv"
 
+/*-------------------------------------------------------*/
+/*----------------------Color Scaling--------------------*/
+/*-------------------------------------------------------*/
+////https://observablehq.com/@d3/working-with-color
+var colorInterpolator = d3.interpolateRgbBasis(["white", "yellow", "orange", "maroon", "brown"]);
+// if the data is scaled using log scale
+let logScale = d3.scaleLog()
+    .domain(0, 10)
+
+// if the data is scaled using linear scale
+let linearScale = d3.scaleLinear()
+    .domain([0, 1000])
 
 // open both files
 Promise.all([
@@ -44,7 +66,10 @@ Promise.all([
     d3.csv(elec_gen),
     d3.csv(c02_emissions),
     d3.csv(population)
-]).then(d => main(d, 2010));
+]).then(d => {
+    data = d;
+    geoPlot(d, 2010);
+});
 
 function filterData(data, year) {
     // console.log(year);
@@ -70,9 +95,7 @@ function filterData(data, year) {
     return [data[0], elec, co2, pop];
 }
 
-function main(data, year) {
-
-    data = data;
+function geoPlot(data, year) {
 
     let dat = filterData(data, year);
 
@@ -94,23 +117,7 @@ function main(data, year) {
     // if topojson file is imported we need to 
     // convert topology data to geojson 
     const geojson = topojson.feature(topo_data, topo_data.objects.cb_2018_us_state_500k);
-    console.log(geojson.features);
-
-    /*-------------------------------------------------------*/
-    /*----------------------Projections----------------------*/
-    /*-------------------------------------------------------*/
-    const projections = [
-        d3
-            .geoAzimuthalEqualArea(), //Azimuthal projections project the sphere directly onto a plane.
-        d3.geoAlbersUsa(), // USA conic projection
-        d3.geoAlbers(), // equal-area conic projection
-        d3.geoMercator(), // cylindrical projection
-        d3.geoNaturalEarth1(), // pseudocylindrical projection designed by Tom Patterson
-        d3.geoEqualEarth(), // Equal Earth projection, by Bojan Šavrič et al., 2018.
-        d3.geoConicEqualArea(), //equal-area conic projection
-        d3.geoEquirectangular(), //Cylindrical Projections
-        d3.geoOrthographic()
-    ]
+    // console.log(geojson.features);
 
     /*-------------------------------------------------------*/
     /*----------------geoPath generator----------------------*/
@@ -118,24 +125,7 @@ function main(data, year) {
 
     const geoPath_generator = d3.geoPath()
         .projection(projections[3].fitSize([window_dims.width - margin, window_dims.height - margin],
-            geojson))
-
-    /*-------------------------------------------------------*/
-    /*----------------------Color Scaling--------------------*/
-    /*-------------------------------------------------------*/
-    ////https://observablehq.com/@d3/working-with-color
-    var colorInterpolator = d3.interpolateRgbBasis(["blue", "steelblue", "green", "purple", "red"])
-    // if the data is scaled using log scale
-    let logScale = d3.scaleLog()
-        .domain(d3.extent(co2_data, (d) => {
-            return d.emission;
-        }))
-
-    // if the data is scaled using linear scale
-    let linearScale = d3.scaleLinear()
-        .domain(d3.extent(co2_data, (d) => {
-            return d.emission;
-        }))
+            geojson));
 
 
     /*-------------------------------------------------------*/
@@ -147,18 +137,11 @@ function main(data, year) {
     /*----------------- channelling marks --------------------*/
     /*--------------------------------------------------------*/
 
-
-    // Append a SVG element to body, then append a path for the boundaries
-    // let svg = d3.select("body").append("svg")
-    //     .attr("width", "80vw")
-    //     .attr("height", "90vh");
-
-    // d3.selectAll('#map').remove()
-    // let svg = d3.select("body").append("svg").attr("width", "80vw").attr("height", "90vh");
-
     let svg = d3.select('#map');
 
     svg.selectAll('path').remove();
+
+    svg.attr("width", "100%").attr("height", "100%");
 
     svg.selectAll("path")
         .data(geojson.features)
@@ -177,7 +160,8 @@ function main(data, year) {
         //     if (found) return colorInterpolator(logScale(found.emission));
         // })
         // .attr("class", d => {
-        //     return `a${d.emission}`
+        //     return 'mx-auto'
+        //     // return `a${d.emission}`
         // })
         .on("mouseenter", (m, d) => {
             tooltip.transition()
@@ -197,10 +181,12 @@ function main(data, year) {
         })
         .on("mousemove", (m, d) => {
             tooltip.style("opacity", .9)
+                .style("z-index", "999")
         })
         .on("mouseout", (m, d) => {
             tooltip.transition()
                 .duration(200)
                 .style("opacity", 0)
-        })
+                .style("z-index", "-999")
+        });
 }

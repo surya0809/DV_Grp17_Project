@@ -171,7 +171,7 @@ function geoPlot(data, year) {
                 var cbdx = co2_data.find(function (item) { return item.state == d.properties.NAME; });
                 var pop = pop_data.find(function (item) { return item.state == d.properties.NAME; });
                 return `
-                <p class="card-title">State: ${d.properties.NAME}</p>
+                <p class="card-title">State: ${d.properties.NAME}, ${d.properties.STUSPS}</p>
                 <p class="card-title">Population: ${pop.population}</p>
                 <p class="card-title">CO2 Emissions(tons): ${cbdx.emission}</p>
                 `

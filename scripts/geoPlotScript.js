@@ -54,7 +54,7 @@ const population = "./data/pop_2010_2019.csv"
 var colorInterpolator = d3.interpolateRgbBasis(["white", "yellow", "orange", "maroon", "brown"]);
 // if the data is scaled using log scale
 let logScale = d3.scaleLog()
-    .domain(0, 10)
+    .domain([0, 10])
 
 // if the data is scaled using linear scale
 let linearScale = d3.scaleLinear()
@@ -140,8 +140,8 @@ function geoPlot(data, year) {
     let svg = d3.select('#map');
 
     svg.selectAll('path').remove();
+    svg.attr("style", "max-width: 100%; height: auto; height: intrinsic;").attr("viewBox", [-250, 100, 800, 400]);
 
-    svg.attr("width", "100%").attr("height", "100%");
 
     svg.selectAll("path")
         .data(geojson.features)
@@ -150,7 +150,7 @@ function geoPlot(data, year) {
         // .attr("id", "map")
         .attr("d", d => geoPath_generator(d))
         // .attr("fill", "yellow")
-        // .attr("fill", d => colorInterpolator(logScale(d.emission)))
+        // // .attr("fill", d => colorInterpolator(logScale(d.emission)))
         .attr("fill", d => {
             var found = co2_data.find(function (item) { return item.state == d.properties.NAME; });
             if (found) return colorInterpolator(linearScale(found.emission));
@@ -159,10 +159,7 @@ function geoPlot(data, year) {
         //     var found = co2_data.find(function (item) { return item.state == d.properties.NAME; });
         //     if (found) return colorInterpolator(logScale(found.emission));
         // })
-        // .attr("class", d => {
-        //     return 'mx-auto'
-        //     // return `a${d.emission}`
-        // })
+        .attr("class", "geoPath")
         .on("mouseenter", (m, d) => {
             tooltip.transition()
                 .duration(200)

@@ -106,12 +106,12 @@ body {
 }
 
 
-path {
+path.geoPath {
     stroke-width: .4px;
     stroke: black
 }
 
-path:hover {
+path.geoPath:hover {
     opacity: .6;
     stroke: black;
     stroke-width: 1.5px;
@@ -130,4 +130,28 @@ path:hover {
     font-size: medium;
     border-radius: 10px;
     line-height: 1;
+}
+
+.line1 {
+    fill: none;
+    stroke-width: 4px;
+    stroke: orangered;
+    fill-opacity: 40%;
+}
+
+.axis {
+    fill: none;
+    font-size: 12pt;
+    font-weight: lighter;
+    stroke-width: 1px;
+    stroke: azure;
+    fill-opacity: 60%;
+}
+
+.chartTitle {
+    font-weight: lighter;
+    stroke-width: 1.5px;
+    stroke: azure;
+    font-size: 15pt;
+
 }

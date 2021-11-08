@@ -10,163 +10,128 @@ const margin = window_dims.width * .2;
 
 var data = [];
 
-let yearSlider = document.getElementById("yearRange");
-yearSlider.addEventListener('change', v => {
-    // console.log(v.target.value);
-    // open both files
-    barPlot(data, v.target.value);
-});
 /*-------------------------------------------------------*/
 /*-----------------parallel load data--------------------*/
 /*-------------------------------------------------------*/
 
-// US states topojson
-const states_topo = "./data/us_states.json"
-
-// a csv file containing the electricity generated from different energy sources
-const elec_gen = "./data/elec_gen_transpose.csv"
-
 // xlsx with co2 emissions
-const c02_emissions = "./data/CO2.csv"
+const c02_emissions = "./data/CO2_T.csv"
 
 // xlsx with population from 2000 - 2018
-const population = "./data/pop_2010_2019.csv"
-
-/*-------------------------------------------------------*/
-/*----------------------Color Scaling--------------------*/
-/*-------------------------------------------------------*/
-////https://observablehq.com/@d3/working-with-color
-var colorInterpolator = d3.interpolateRgbBasis(["white", "yellow", "orange", "maroon", "brown"]);
-// if the data is scaled using log scale
-let logScale = d3.scaleLog()
-    .domain([0, 10])
-
-// if the data is scaled using linear scale
-let linearScale = d3.scaleLinear()
-    .domain([0, 1000])
+const population = "./data/pop_2010_2019_T.csv"
 
 // open both files
 Promise.all([
-    d3.json(states_topo),
-    d3.csv(elec_gen),
     d3.csv(c02_emissions),
     d3.csv(population)
 ]).then(d => {
     data = d;
-    barPlot(d, 2010);
+    barPlot(d);
 });
 
-function filterData(data, year) {
-    // console.log(year);
-    let elec = data[1][0][year];
+function barPlot(d) {
 
-    let co2 = data[2].map(d => {
-        return {
-            state: d.State,
-            emission: d[year]
-        };
+    const co2_data = d[0].map((dt) => {
+        return { year: dt.Year, co2: parseFloat(dt['United States']) }
     });
 
-    let pop = data[3].map(d => {
-        return {
-            state: d.State,
-            population: d[year]
-        };
+    const pop_data = d[1].map((dt) => {
+        return { year: dt.Year, population: parseInt(dt['United States']) / 1000000 }
     });
 
-    d3.select('#year_value').html(() => {
-        return year;
-    })
-    return [data[0], elec, co2, pop];
+    console.log(co2_data);
+    console.log(pop_data);
+
+    var xScale = d3.scaleBand().range([0, window_dims.width - margin]).padding(0.4);
+
+    var yScale = d3.scaleLinear().range([window_dims.height, 0]);
+
+    var yScale2 = d3.scaleLinear().range([window_dims.height, 0]);
+
+    let svg = d3.select('#bar');
+
+    svg.selectAll('g').remove();
+    svg.selectAll('rect').remove();
+    svg.attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+    svg.attr("viewBox", [-100, -50, 2000, 1500]);
+
+    xScale.domain(pop_data.map(function (d) { return d.year; }));
+    yScale.domain([5, d3.max(pop_data, function (d) { return d.population; })]);
+
+    yScale2.domain([4500, d3.max(co2_data, function (d) { return d.co2; }) + 500 ]);
+    console.log(d3.max(co2_data, function (d) { return d.co2; }));
+
+    svg.append("g")
+        .attr("transform", "translate(0," + window_dims.height + ")")
+        .attr("class", "axis")
+        .call(d3.axisBottom(xScale))
+        .append("text")
+        .attr("transform",
+            "translate(" + (window_dims.width / 2.5) + " ," +
+            (window_dims.height - margin * 2.30) + ")")
+        .style("text-anchor", "middle")
+        .attr("class", "chartTitle")
+        .text("Year");
+
+    svg.append("g")
+        .call(d3.axisLeft(yScale).tickFormat(function (d) {
+            return d + "M";
+        })
+            .ticks(15))
+        .attr("class", "axis")
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", margin - margin - 100)
+        .attr("x", 0 - (window_dims.height / 2))
+        .attr("class", "chartTitle")
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Population");
+
+    // right axis for co2
+    svg.append("g")
+        .call(d3.axisRight(yScale2).tickFormat(function (d) {
+            return d + " Tons";
+        })
+            .ticks(15))
+        .attr("class", "rightAxis")
+        .attr("transform",
+            "translate(" + (window_dims.width / 1.25) + " ," +
+            (window_dims.height - margin * 2.45) + ")")
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 100)
+        .attr("x", 0 - (window_dims.height / 2))
+        .attr("class", "rightChartTitle")
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("CO2 Emissions");
+
+    svg.selectAll(".bar")
+        .data(pop_data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) { return xScale(d.year); })
+        .attr("y", function (d) { return yScale(d.population); })
+        .attr("width", xScale.bandwidth())
+        .attr("height", function (d) { return window_dims.height - yScale(d.population); });
+
+    let line1 = d3.line()
+        .x(function (d) {
+
+            return xScale(d.year);
+        })
+        .y(function (d) {
+
+            return yScale2(d.co2);
+        });
+
+    svg.append("path")
+        .data([co2_data])
+        .attr("class", "line1")
+        .attr("d", line1)
+        .attr("transform",
+            "translate(" + (25) + " ," +
+            (window_dims.height - margin * 2.45) + ")");
 }
-
-// Copyright 2021 Observable, Inc.
-// Released under the ISC license.
-// https://observablehq.com/@d3/bar-chart
-function barChart(data, {
-    x = (d, i) => i, // given d in data, returns the (ordinal) x-value
-    y = d => d, // given d in data, returns the (quantitative) y-value
-    title, // given d in data, returns the title text
-    marginTop = 20, // the top margin, in pixels
-    marginRight = 0, // the right margin, in pixels
-    marginBottom = 30, // the bottom margin, in pixels
-    marginLeft = 40, // the left margin, in pixels
-    width = 640, // the outer width of the chart, in pixels
-    height = 400, // the outer height of the chart, in pixels
-    xDomain, // an array of (ordinal) x-values
-    xRange = [marginLeft, width - marginRight], // [left, right]
-    yType = d3.scaleLinear, // y-scale type
-    yDomain, // [ymin, ymax]
-    yRange = [height - marginBottom, marginTop], // [bottom, top]
-    xPadding = 0.1, // amount of x-range to reserve to separate bars
-    yFormat, // a format specifier string for the y-axis
-    yLabel, // a label for the y-axis
-    color = "currentColor" // bar fill color
-  } = {}) {
-    // Compute values.
-    const X = d3.map(data, x);
-    const Y = d3.map(data, y);
-  
-    // Compute default domains, and unique the x-domain.
-    if (xDomain === undefined) xDomain = X;
-    if (yDomain === undefined) yDomain = [0, d3.max(Y)];
-    xDomain = new d3.InternSet(xDomain);
-  
-    // Omit any data not present in the x-domain.
-    const I = d3.range(X.length).filter(i => xDomain.has(X[i]));
-  
-    // Construct scales, axes, and formats.
-    const xScale = d3.scaleBand(xDomain, xRange).padding(xPadding);
-    const yScale = yType(yDomain, yRange);
-    const xAxis = d3.axisBottom(xScale).tickSizeOuter(0);
-    const yAxis = d3.axisLeft(yScale).ticks(height / 40, yFormat);
-  
-    // Compute titles.
-    if (title === undefined) {
-      const formatValue = yScale.tickFormat(100, yFormat);
-      title = i => `${X[i]}\n${formatValue(Y[i])}`;
-    } else {
-      const O = d3.map(data, d => d);
-      const T = title;
-      title = i => T(O[i], i, data);
-    }
-  
-    const svg = d3.select("#")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("viewBox", [0, 0, width, height])
-        .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
-  
-    svg.append("g")
-        .attr("transform", `translate(${marginLeft},0)`)
-        .call(yAxis)
-        .call(g => g.select(".domain").remove())
-        .call(g => g.selectAll(".tick line").clone()
-            .attr("x2", width - marginLeft - marginRight)
-            .attr("stroke-opacity", 0.1))
-        .call(g => g.append("text")
-            .attr("x", -marginLeft)
-            .attr("y", 10)
-            .attr("fill", "currentColor")
-            .attr("text-anchor", "start")
-            .text(yLabel));
-  
-    const bar = svg.append("g")
-        .attr("fill", color)
-      .selectAll("rect")
-      .data(I)
-      .join("rect")
-        .attr("x", i => xScale(X[i]))
-        .attr("y", i => yScale(Y[i]))
-        .attr("height", i => yScale(0) - yScale(Y[i]))
-        .attr("width", xScale.bandwidth());
-  
-    if (title) bar.append("title")
-        .text(title);
-  
-    svg.append("g")
-        .attr("transform", `translate(0,${height - marginBottom})`)
-        .call(xAxis);
-  
-    return svg.node();
-  }

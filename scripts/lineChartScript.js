@@ -57,6 +57,8 @@ function lineChart(d) {
     let svg = d3.select('#line');
 
     svg.selectAll('g').remove();
+    svg.selectAll('path').remove();
+    svg.selectAll('text').remove();
     svg.attr("style", "max-width: 100%; height: auto; height: intrinsic;")
     svg.attr("viewBox", [200, 200, 2000, 1000]);
 

@@ -148,10 +148,32 @@ path.geoPath:hover {
     fill-opacity: 60%;
 }
 
+.rightAxis {
+    fill: none;
+    font-size: 12pt;
+    font-weight: lighter;
+    stroke-width: 1px;
+    stroke: orangered;
+    fill-opacity: 60%;
+}
+
 .chartTitle {
     font-weight: lighter;
     stroke-width: 1.5px;
     stroke: azure;
     font-size: 15pt;
 
+}
+
+.rightChartTitle {
+    font-weight: lighter;
+    stroke-width: 1.5px;
+    stroke: orangered;
+    font-size: 16pt;
+
+}
+
+.bar {
+    fill: gray;
+    opacity: 0.6;
 }

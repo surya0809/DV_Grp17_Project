@@ -149,7 +149,7 @@ function lineChart(d) {
         .attr("class", "axis")
         .attr("transform", "translate(" + margin + "," + '0' + ")")
         .call(d3.axisLeft(y).ticks(10).tickFormat(function (d) {
-            return `${d} M`;
+            return `${d} GW`;
         }));
 
     // text label for the y axis
@@ -160,6 +160,6 @@ function lineChart(d) {
         .attr("class", "chartTitle")
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Millions tons of Coal used for producing energy");
+        .text("Electricity generated using coal");
 
 }

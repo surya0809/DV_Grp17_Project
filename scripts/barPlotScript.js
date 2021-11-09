@@ -10,6 +10,8 @@ const margin = window_dims.width * .2;
 
 var data = [];
 
+const tooltip = d3.select("#tooltip");
+
 /*-------------------------------------------------------*/
 /*-----------------parallel load data--------------------*/
 /*-------------------------------------------------------*/
@@ -32,15 +34,18 @@ Promise.all([
 function barPlot(d) {
 
     const co2_data = d[0].map((dt) => {
-        return { year: dt.Year, co2: parseFloat(dt['United States']) }
+        return {
+            year: dt.Year,
+            co2: parseFloat(dt['United States'])
+        }
     });
 
     const pop_data = d[1].map((dt) => {
-        return { year: dt.Year, population: parseInt(dt['United States']) / 1000000 }
+        return {
+            year: dt.Year,
+            population: parseInt(dt['United States']) 
+        }
     });
-
-    console.log(co2_data);
-    console.log(pop_data);
 
     var xScale = d3.scaleBand().range([0, window_dims.width - margin]).padding(0.4);
 
@@ -55,11 +60,17 @@ function barPlot(d) {
     svg.attr("style", "max-width: 100%; height: auto; height: intrinsic;")
     svg.attr("viewBox", [-100, -50, 2000, 1500]);
 
-    xScale.domain(pop_data.map(function (d) { return d.year; }));
-    yScale.domain([5, d3.max(pop_data, function (d) { return d.population; })]);
+    xScale.domain(pop_data.map(function (d) {
+        return d.year;
+    }));
+    yScale.domain([5, d3.max(pop_data, function (d) {
+        return d.population;
+    })]);
 
-    yScale2.domain([4500, d3.max(co2_data, function (d) { return d.co2; }) + 500 ]);
-    console.log(d3.max(co2_data, function (d) { return d.co2; }));
+    yScale2.domain([4500, d3.max(co2_data, function (d) {
+        return d.co2;
+    }) + 500]);
+
 
     svg.append("g")
         .attr("transform", "translate(0," + window_dims.height + ")")
@@ -75,8 +86,8 @@ function barPlot(d) {
 
     svg.append("g")
         .call(d3.axisLeft(yScale).tickFormat(function (d) {
-            return d + "M";
-        })
+                return d / 1000000 + "M";
+            })
             .ticks(15))
         .attr("class", "axis")
         .append("text")
@@ -91,8 +102,8 @@ function barPlot(d) {
     // right axis for co2
     svg.append("g")
         .call(d3.axisRight(yScale2).tickFormat(function (d) {
-            return d + " Tons";
-        })
+                return d + " Tons";
+            })
             .ticks(15))
         .attr("class", "rightAxis")
         .attr("transform",
@@ -112,10 +123,39 @@ function barPlot(d) {
         .enter()
         .append("rect")
         .attr("class", "bar")
-        .attr("x", function (d) { return xScale(d.year); })
-        .attr("y", function (d) { return yScale(d.population); })
+        .attr("x", function (d) {
+            return xScale(d.year);
+        })
+        .attr("y", function (d) {
+            return yScale(d.population);
+        })
         .attr("width", xScale.bandwidth())
-        .attr("height", function (d) { return window_dims.height - yScale(d.population); });
+        .attr("height", function (d) {
+            return window_dims.height - yScale(d.population);
+        })
+        .on("mouseenter", (m, d) => {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+            tooltip.html(() => {
+                    return `
+                    <p class="card-title">Year: ${d.year}</p>
+                    <p class="card-title">Population: ${d3.format(",")(d.population)}</p>
+                    `
+                })
+                .style("left", m.clientX + "px")
+                .style("top", m.clientY + "px");
+        })
+        .on("mousemove", (m, d) => {
+            tooltip.style("opacity", .9)
+                .style("z-index", "9999")
+        })
+        .on("mouseout", (m, d) => {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 0)
+                .style("z-index", "-999")
+        });
 
     let line1 = d3.line()
         .x(function (d) {
@@ -134,4 +174,49 @@ function barPlot(d) {
         .attr("transform",
             "translate(" + (25) + " ," +
             (window_dims.height - margin * 2.45) + ")");
+
+    let c = svg.selectAll("circle")
+        .data(co2_data)
+        .enter()
+        .append("circle")
+        .attr("class", "circ")
+        .attr("fill", "red")
+        .attr("stroke", "none")
+        .attr("cx", function (d) {
+            return xScale(d.year)
+        })
+        .attr("cy", function (d) {
+            return yScale2(d.co2)
+        })
+        .attr("r", 2)
+        .attr("transform",
+            "translate(" + (25) + " ," +
+            (window_dims.height - margin * 2.45) + ")")
+        .on("mouseenter", (m, d) => {
+            c.attr("r", 5);
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+            tooltip.html(() => {
+                    return `
+                    <p class="card-title">Year: ${d.year}</p>
+                    <p class="card-title">CO2 Emissions: ${d.co2}MW</p>
+                    `
+                })
+                .style("left", m.clientX + "px")
+                .style("top", m.clientY + "px");
+        })
+        .on("mousemove", (m, d) => {
+            c.attr("r", 5);
+            tooltip.style("opacity", .9)
+                .style("z-index", "9999")
+        })
+        .on("mouseout", (m, d) => {
+            c.attr("r", 2);
+
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 0)
+                .style("z-index", "-999")
+        });
 }

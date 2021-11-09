@@ -41,7 +41,10 @@ Promise.all([
 function lineChart(d) {
 
     let data = d.map((dt) => {
-        return { year: d3.timeParse("%Y")(dt.year), coal: dt.coal }
+        return {
+            year: d3.timeParse("%Y")(dt.year),
+            coal: dt.coal
+        }
     });
 
 
@@ -89,6 +92,43 @@ function lineChart(d) {
         .data([data])
         .attr("class", "line1")
         .attr("d", line1);
+
+    svg.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("fill", "red")
+        .attr("stroke", "none")
+        .attr("cx", function (d) {
+            return x(d.year)
+        })
+        .attr("cy", function (d) {
+            return y(d.coal / 1000)
+        })
+        .attr("r", 5)
+        .on("mouseenter", (m, d) => {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9)
+            tooltip.html(() => {
+                    return `
+                <p class="card-title">Year: ${d3.timeFormat("%Y")(d.year)}</p>
+                <p class="card-title">Energy Produced: ${d.coal}MW</p>
+                `
+                })
+                .style("left", m.clientX + "px")
+                .style("top", m.clientY + "px");
+        })
+        .on("mousemove", (m, d) => {
+            tooltip.style("opacity", .9)
+                .style("z-index", "999")
+        })
+        .on("mouseout", (m, d) => {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 0)
+                .style("z-index", "-999")
+        });
 
 
     svg.append("g")

@@ -139,6 +139,13 @@ path.geoPath:hover {
     fill-opacity: 40%;
 }
 
+.line1:hover {
+    fill: none;
+    stroke-width: 6px;
+    stroke: orange;
+    fill-opacity: 30%;
+}
+
 .axis {
     fill: none;
     font-size: 12pt;
@@ -176,4 +183,9 @@ path.geoPath:hover {
 .bar {
     fill: gray;
     opacity: 0.6;
+}
+
+.bar:hover {
+    fill: lightgray;
+    opacity: 0.7;
 }

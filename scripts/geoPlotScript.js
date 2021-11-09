@@ -169,7 +169,7 @@ function geoPlot(data, year) {
                 var pop = pop_data.find(function (item) { return item.state == d.properties.NAME; });
                 return `
                 <p class="card-title">State: ${d.properties.NAME}, ${d.properties.STUSPS}</p>
-                <p class="card-title">Population: ${pop.population}</p>
+                <p class="card-title">Population: ${d3.format(",")(pop.population)}</p>
                 <p class="card-title">CO2 Emissions(tons): ${cbdx.emission}</p>
                 `
             })

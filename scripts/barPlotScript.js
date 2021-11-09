@@ -65,7 +65,7 @@ function barPlot(d) {
     }));
     yScale.domain([5, d3.max(pop_data, function (d) {
         return d.population;
-    })]);
+    }) + 1000000]);
 
     yScale2.domain([4500, d3.max(co2_data, function (d) {
         return d.co2;
@@ -108,7 +108,7 @@ function barPlot(d) {
         .attr("class", "rightAxis")
         .attr("transform",
             "translate(" + (window_dims.width / 1.25) + " ," +
-            (window_dims.height - margin * 2.45) + ")")
+            (window_dims.height - margin * 2.45 - 30) + ")")
         .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 100)
@@ -173,7 +173,7 @@ function barPlot(d) {
         .attr("d", line1)
         .attr("transform",
             "translate(" + (25) + " ," +
-            (window_dims.height - margin * 2.45) + ")");
+            (window_dims.height - margin * 2.45 - 30) + ")");
 
     let c = svg.selectAll("circle")
         .data(co2_data)
@@ -191,7 +191,7 @@ function barPlot(d) {
         .attr("r", 2)
         .attr("transform",
             "translate(" + (25) + " ," +
-            (window_dims.height - margin * 2.45) + ")")
+            (window_dims.height - margin * 2.45 - 30) + ")")
         .on("mouseenter", (m, d) => {
             c.attr("r", 5);
             tooltip.transition()

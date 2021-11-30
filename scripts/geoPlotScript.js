@@ -69,6 +69,12 @@ Promise.all([
 ]).then(d => {
     data = d;
     geoPlot(d, 2010);
+    // quantile scale
+    var redBlueScale = ["white", "yellow", "orange", "maroon", "brown"];
+    var qScale = d3.scaleQuantile()
+          .domain([0, 500, 1000])
+          .range(redBlueScale);
+    colorlegend("#quantileLegendVertical", qScale, "quantile", {title: "CO2 Emissions in tons", boxHeight: 80, boxWidth: 30, vertical: true });
 });
 
 function filterData(data, year) {
@@ -140,7 +146,7 @@ function geoPlot(data, year) {
     let svg = d3.select('#map');
 
     svg.selectAll('path').remove();
-    svg.attr("style", "max-width: 100%; height: auto; height: intrinsic;").attr("viewBox", [-250, 100, 800, 400]);
+    svg.attr("style", "width: 70vw; height: 80vh").attr("viewBox", [0, 100, 250, 200]);
 
 
     svg.selectAll("path")
@@ -152,7 +158,9 @@ function geoPlot(data, year) {
         // .attr("fill", "yellow")
         // // .attr("fill", d => colorInterpolator(logScale(d.emission)))
         .attr("fill", d => {
-            var found = co2_data.find(function (item) { return item.state == d.properties.NAME; });
+            var found = co2_data.find(function (item) {
+                return item.state == d.properties.NAME;
+            });
             if (found) return colorInterpolator(linearScale(found.emission));
         })
         // .attr("fill", d => {
@@ -165,14 +173,18 @@ function geoPlot(data, year) {
                 .duration(200)
                 .style("opacity", .9)
             tooltip.html(() => {
-                var cbdx = co2_data.find(function (item) { return item.state == d.properties.NAME; });
-                var pop = pop_data.find(function (item) { return item.state == d.properties.NAME; });
-                return `
+                    var cbdx = co2_data.find(function (item) {
+                        return item.state == d.properties.NAME;
+                    });
+                    var pop = pop_data.find(function (item) {
+                        return item.state == d.properties.NAME;
+                    });
+                    return `
                 <p class="card-title">State: ${d.properties.NAME}, ${d.properties.STUSPS}</p>
                 <p class="card-title">Population: ${d3.format(",")(pop.population)}</p>
                 <p class="card-title">CO2 Emissions(tons): ${cbdx.emission}</p>
                 `
-            })
+                })
                 .style("left", m.clientX + "px")
                 .style("top", m.clientY + "px");
         })

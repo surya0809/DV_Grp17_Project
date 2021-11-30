@@ -134,14 +134,14 @@ path.geoPath:hover {
 
 .line1 {
     fill: none;
-    stroke-width: 4px;
+    stroke-width: 3px;
     stroke: orangered;
     fill-opacity: 40%;
 }
 
 .line1:hover {
     fill: none;
-    stroke-width: 6px;
+    stroke-width: 7px;
     stroke: orange;
     fill-opacity: 30%;
 }
@@ -188,4 +188,20 @@ path.geoPath:hover {
 .bar:hover {
     fill: lightgray;
     opacity: 0.7;
+}
+
+.legend2,
+.legend2ordinal {
+    background-color: #fff;
+    width: 100px;
+    height: 200px;
+    border: 1px solid #bbb;
+    margin: 10px;
+    float: right;
+}
+
+.input-group-text{
+    background-color: #222222;
+    border: none;
+    color: azure;
 }

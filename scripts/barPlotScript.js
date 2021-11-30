@@ -57,8 +57,8 @@ function barPlot(d) {
 
     svg.selectAll('g').remove();
     svg.selectAll('rect').remove();
-    svg.attr("style", "max-width: 100%; height: auto; height: intrinsic;")
-    svg.attr("viewBox", [-100, -50, 2000, 1500]);
+    svg.attr("style", "max-width: 100%; height: auto")
+    svg.attr("viewBox", [-200, -100, 1750, 915]);
 
     xScale.domain(pop_data.map(function (d) {
         return d.year;
@@ -108,7 +108,7 @@ function barPlot(d) {
         .attr("class", "rightAxis")
         .attr("transform",
             "translate(" + (window_dims.width / 1.25) + " ," +
-            (window_dims.height - margin * 2.45 - 30) + ")")
+            (window_dims.height - margin * 2.45) + ")")
         .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 100)
@@ -172,7 +172,7 @@ function barPlot(d) {
         .attr("class", "line1")
         .attr("d", line1)
         .attr("transform",
-            "translate(" + (25) + " ," +
+            "translate(" + (20) + " ," +
             (window_dims.height - margin * 2.45 - 30) + ")");
 
     let c = svg.selectAll("circle")
@@ -188,9 +188,9 @@ function barPlot(d) {
         .attr("cy", function (d) {
             return yScale2(d.co2)
         })
-        .attr("r", 2)
+        .attr("r", 4)
         .attr("transform",
-            "translate(" + (25) + " ," +
+            "translate(" + (20) + " ," +
             (window_dims.height - margin * 2.45 - 30) + ")")
         .on("mouseenter", (m, d) => {
             c.attr("r", 5);
@@ -212,7 +212,7 @@ function barPlot(d) {
                 .style("z-index", "9999")
         })
         .on("mouseout", (m, d) => {
-            c.attr("r", 2);
+            c.attr("r", 4);
 
             tooltip.transition()
                 .duration(200)

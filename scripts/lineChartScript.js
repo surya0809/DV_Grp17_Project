@@ -62,20 +62,23 @@ function lineChart(d) {
     svg.selectAll('g').remove();
     svg.selectAll('path').remove();
     svg.selectAll('text').remove();
-    svg.attr("style", "max-width: 100%; height: auto; height: intrinsic;")
-    svg.attr("viewBox", [200, 200, 2000, 1000]);
+    svg.attr("style", "max-width: 100%; height: auto")
+    svg.attr("viewBox", [175, 225, 1350, 715]);
+
+    let extent = d3.extent(data, function (d) {
+        return d.year;
+    });
 
     let x = d3.scaleTime()
-        .domain(d3.extent(data, function (d) {
-            return d.year;
-        }))
+        .domain(extent)
         .range([margin, window_dims.width]);
 
+    console.log(data[0].year);
     let y = d3.scaleLinear()
-        .domain([0, d3.max(data, function (d) {
+        .domain([-100 / 1000, d3.max(data, function (d) {
 
             return d.coal / 1000;
-        })])
+        }) + (100/1000)])
         .range([window_dims.height, margin]);
 
     let line1 = d3.line()
@@ -134,7 +137,7 @@ function lineChart(d) {
     svg.append("g")
         .attr("transform", "translate(" + '0' + "," + window_dims.height + ")")
         .attr("class", "axis")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).ticks(10));
 
     // text label for the x axis
     svg.append("text")

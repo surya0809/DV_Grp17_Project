@@ -201,7 +201,7 @@ function barPlot(d) {
             tooltip.html(() => {
                     return `
                     <p class="card-title">Year: ${d.year}</p>
-                    <p class="card-title">CO2 Emissions: ${d.co2}MW</p>
+                    <p class="card-title">CO2 Emissions: ${d.co2} tons</p>
                     `
                 })
                 .style("left", m.clientX + "px")

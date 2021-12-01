@@ -43,7 +43,7 @@ function barPlot(d) {
     const pop_data = d[1].map((dt) => {
         return {
             year: dt.Year,
-            population: parseInt(dt['United States']) 
+            population: parseInt(dt['United States'])
         }
     });
 
@@ -169,7 +169,8 @@ function barPlot(d) {
 
     svg.append("path")
         .data([co2_data])
-        .attr("class", "line1")
+        .attr("class", "line")
+        .attr("stroke", "orangered")
         .attr("d", line1)
         .attr("transform",
             "translate(" + (20) + " ," +

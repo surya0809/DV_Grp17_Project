@@ -70,10 +70,10 @@ Promise.all([
     data = d;
     geoPlot(d, 2010);
     // quantile scale
-    var redBlueScale = ["white", "yellow", "orange", "maroon", "brown"];
+    var colorScale = ["white", "yellow", "orange", "maroon", "brown"];
     var qScale = d3.scaleQuantile()
-          .domain([0, 500, 1000])
-          .range(redBlueScale);
+          .domain([1000, 500, 0])
+          .range(colorScale);
     colorlegend("#quantileLegendVertical", qScale, "quantile", {title: "CO2 Emissions in tons", boxHeight: 80, boxWidth: 30, vertical: true });
 });
 

@@ -99,7 +99,7 @@ var colorlegend = function (target, scale, type, options) {
     .attr("id", "legendId")
     .attr('transform', 'translate(' + padding[3] + ',' + padding[0] + ')')
     .style('font-size', '11px')
-    .style('fill', '#666');
+    .style('fill', 'white');
 
   var legendBoxes = legend.selectAll('g.legend')
     .data(colors)
@@ -110,7 +110,7 @@ var colorlegend = function (target, scale, type, options) {
   if (!isVertical) {
     valueLabels = legendBoxes.append('text')
       .attr('class', 'colorlegend-labels')
-      .attr('dy', '.71em')
+      .attr('dy', '8pt')
       .attr('x', function (d, i) {
         return i * (boxWidth + boxSpacing) + (type !== 'ordinal' ? (boxWidth / 2) : 0);
       })
@@ -186,14 +186,14 @@ var colorlegend = function (target, scale, type, options) {
 
     if (!isVertical) {
       legendText
-        .attr('dy', '.71em')
-        .attr('x', (colors.length * (boxWidth / 2)))
+        .attr('dy', '8pt')
+        .attr('x', (colors.length * (boxWidth / 2.5)))
         .attr('y', boxHeight + titlePadding);
 
     } else {
       legendText
-        .attr('dy', '.51em')
-        .attr('y', (colors.length * (boxHeight / 2)))
+        .attr('dy', '8pt')
+        .attr('y', (colors.length * (boxHeight / 2.5 )))
         .attr('transform', 'rotate(90, 5,' + (colors.length * (boxHeight / 2)) + ')');
     }
   }

@@ -132,18 +132,18 @@ path.geoPath:hover {
     line-height: 1;
 }
 
-.line1 {
+.line {
     fill: none;
     stroke-width: 3px;
-    stroke: orangered;
-    fill-opacity: 40%;
+    /* stroke: orangered; */
+    opacity: 70%;
 }
 
-.line1:hover {
+.line:hover {
     fill: none;
     stroke-width: 7px;
-    stroke: orange;
-    fill-opacity: 30%;
+    /* stroke: orange; */
+    opacity: 60%;
 }
 
 .axis {
@@ -190,18 +190,43 @@ path.geoPath:hover {
     opacity: 0.7;
 }
 
-.legend2,
-.legend2ordinal {
-    background-color: #fff;
-    width: 100px;
+.legend2 {
+    position: absolute;
+    right: 0.5vw;
+    top: 22.5vh;
+    width: 120px;
     height: 200px;
     border: 1px solid #bbb;
-    margin: 10px;
+    margin: 5px;
     float: right;
+    font-size: 10pt;
+    color: white;
 }
 
-.input-group-text{
+.input-group-text {
     background-color: #222222;
     border: none;
     color: azure;
+}
+
+.circ {
+    /* fill: gray; */
+    stroke: none;
+    opacity: 0.7;
+}
+
+.circ:hover {
+    opacity: 0.9;
+}
+
+.legend {
+    position: absolute;
+    right: 0.5vw;
+    top: 20vh;
+    width: 180px;
+    height: 150px;
+    border: 1px solid #bbb;
+    margin: 5px;
+    float: right;
+    font-size: 10pt;
 }

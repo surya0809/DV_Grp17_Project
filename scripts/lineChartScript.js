@@ -37,7 +37,7 @@ Promise.all([
 var legend = d3.select("#legend")
 
 // create a list of keys
-var keys = ["Coal", "Natural Gas", "Nuclear", "Renewables", "Petroleum and other"];
+var keys = ["Coal", "Natural Gas", "Nuclear", "Renewables", "Petroleum"];
 
 // Usually you have a color scale in your chart already
 var color = d3.scaleOrdinal()
@@ -102,7 +102,7 @@ function lineChart(d) {
     svg.selectAll('path').remove();
     svg.selectAll('text').remove();
     svg.attr("style", "max-width: 100%; height: auto")
-    svg.attr("viewBox", [190, 225, 1490, 715]);
+    svg.attr("viewBox", [190, 225, window_dims.width, window_dims.height]);
 
     let extent = d3.extent(data, function (d) {
         return d.year;
@@ -272,7 +272,7 @@ function lineChart(d) {
                 .style("opacity", .9)
             tooltip.html(() => {
                     return `
-    <p class="card-title">Petrol</p>
+    <p class="card-title">Petroleum and Others</p>
     `
                 })
                 .style("left", m.clientX + "px")

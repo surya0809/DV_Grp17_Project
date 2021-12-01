@@ -58,7 +58,7 @@ function barPlot(d) {
     svg.selectAll('g').remove();
     svg.selectAll('rect').remove();
     svg.attr("style", "max-width: 100%; height: auto")
-    svg.attr("viewBox", [-200, -100, 1750, 915]);
+    svg.attr("viewBox", [-150, -50, window_dims.width + margin - 100, window_dims.height + margin - 150]);
 
     xScale.domain(pop_data.map(function (d) {
         return d.year;
